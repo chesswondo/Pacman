@@ -92,8 +92,8 @@ class Dot(Character):
         return dot_image
     
 
-class Fire(Character):
-    '''Class for fireballs.'''
+class Bonus(Character):
+    '''Class for fireballs/hearts.'''
     def __init__(self,
                  grid: np.ndarray,
                  field_size: Tuple[int, int],
@@ -108,9 +108,9 @@ class Fire(Character):
                         image_path)
         
     def _load_image(self):
-        fire_image = pygame.image.load(self._image_path)
-        fire_image = pygame.transform.scale(fire_image, tuple(size for size in self._field_size))
-        return fire_image
+        bonus_image = pygame.image.load(self._image_path)
+        bonus_image = pygame.transform.scale(bonus_image, tuple(size for size in self._field_size))
+        return bonus_image
     
 
 class Ghost(Character):
@@ -137,20 +137,36 @@ class Ghost(Character):
         possible_ghost_ways = []
 
         if is_up_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_y < self.y)*(mode=='hunt')):
+            if mode == 'hunt':
+                [possible_ghost_ways.append('up') for i in range(1+2*int(pacman_y < self.y))]
+            if mode == 'calm':
                 possible_ghost_ways.append('up')
+            if mode == 'fear':
+                [possible_ghost_ways.append('up') for i in range(1+2*int(pacman_y > self.y))]
 
         if is_down_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_y > self.y)*(mode=='hunt')):
+            if mode == 'hunt':
+                [possible_ghost_ways.append('down') for i in range(1+2*int(pacman_y > self.y))]
+            if mode == 'calm':
                 possible_ghost_ways.append('down')
+            if mode == 'fear':
+                [possible_ghost_ways.append('down') for i in range(1+2*int(pacman_y < self.y))]
 
         if is_left_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_x < self.x)*(mode=='hunt')):
+            if mode == 'hunt':
+                [possible_ghost_ways.append('left') for i in range(1+2*int(pacman_x < self.x))]
+            if mode == 'calm':
                 possible_ghost_ways.append('left')
+            if mode == 'fear':
+                [possible_ghost_ways.append('left') for i in range(1+2*int(pacman_x > self.x))]
 
         if is_right_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_x > self.x)*(mode=='hunt')):
+            if mode == 'hunt':
+                [possible_ghost_ways.append('right') for i in range(1+2*int(pacman_x > self.x))]
+            if mode == 'calm':
                 possible_ghost_ways.append('right')
+            if mode == 'fear':
+                [possible_ghost_ways.append('right') for i in range(1+2*int(pacman_x < self.x))]
 
         direction = random.choice(possible_ghost_ways)
         if direction == 'up':

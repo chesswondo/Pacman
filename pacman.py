@@ -2,7 +2,7 @@ import pygame
 import time
 import random
 from maze_generator import Maze
-from characters import Pacman, Dot, Ghost, Fire
+from characters import Pacman, Dot, Ghost, Bonus
 from utils import *
 
 def run_pacman_game(screen_width: int,
@@ -31,9 +31,12 @@ def run_pacman_game(screen_width: int,
     pacman_image = pacman.image
     dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
     dot_image = dot.image
-    fireball = Fire(grid, field_size, map_width, map_height, "images/fireball.png")
+    fireball = Bonus(grid, field_size, map_width, map_height, "images/fireball.png")
     fireball.x, fireball.y = -1, -1
     fireball_image = fireball.image
+    heart = Bonus(grid, field_size, map_width, map_height, "images/heart.png")
+    heart.x, heart.y = -1, -1
+    heart_image = heart.image
 
     ghost_images = ["images/ghost_red.png", "images/ghost_blue.png", "images/ghost_green.png", "images/ghost_yellow.png"]
     ghost_image = random.choice(ghost_images)
@@ -55,16 +58,22 @@ def run_pacman_game(screen_width: int,
     score = 0
     
     ghosts = [ghost]
-    fireball_counter = 5
+    fireball_counter = 50
+    heart_counter = 50
 
     # Main game loop
     while running:
 
         # Ghost behaviour mode
         ghost_mode = 'hunt'
+
         fireball_counter += 1
         if fireball_counter < 50:
             ghost_mode = 'calm'
+        
+        heart_counter += 1
+        if heart_counter < 50:
+            ghost_mode = 'fear'
 
         keys = pygame.key.get_pressed()
         # Check for pacman input
@@ -86,8 +95,12 @@ def run_pacman_game(screen_width: int,
         if pacman.x == dot.x and pacman.y == dot.y:
             score += 1
             dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
+
             if random.randrange(5) == 0:
-                fireball = Fire(grid, field_size, map_width, map_height, "images/fireball.png")
+                fireball = Bonus(grid, field_size, map_width, map_height, "images/fireball.png")
+            if random.randrange(10) == 0:
+                heart = Bonus(grid, field_size, map_width, map_height, "images/heart.png")
+
             while(True):
                 new_ghost = Ghost(grid, field_size, map_width, map_height, random.choice(ghost_images))
                 if min(abs(new_ghost.x-pacman.x), abs(new_ghost.y-pacman.y)) > 5:
@@ -98,6 +111,11 @@ def run_pacman_game(screen_width: int,
         if pacman.x == fireball.x and pacman.y == fireball.y:
             fireball_counter = 0
             fireball.x, fireball.y = -1, -1
+
+        # Heart catching
+        if pacman.x == heart.x and pacman.y == heart.y:
+            heart_counter = 0
+            heart.x, heart.y = -1, -1
         
         # Ghost behaviour
         screen.fill((0, 0, 0))
@@ -113,6 +131,7 @@ def run_pacman_game(screen_width: int,
         screen.blit(pacman_image, (pacman.x*x_scaling, pacman.y*y_scaling))
         screen.blit(dot_image, (dot.x*x_scaling, dot.y*y_scaling))
         screen.blit(fireball_image, (fireball.x*x_scaling, fireball.y*y_scaling))
+        screen.blit(heart_image, (heart.x*x_scaling, heart.y*y_scaling))
         for field_x in range(grid.shape[0]):
             for field_y in range(grid.shape[1]):
                 if grid[field_x][field_y] == 1:
