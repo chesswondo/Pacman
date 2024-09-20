@@ -89,7 +89,7 @@ def run_pacman_game(screen_width: int,
             if abs(pacman.x - ghost.x) < 0.5 and abs(pacman.y - ghost.y) < 0.5:
                 pygame.quit()
 
-            ghosts[ghost_id].make_move()
+            ghosts[ghost_id].make_move(pacman.x, pacman.y)
 
         # Draw game
         screen.blit(pacman_image, (pacman.x*x_scaling, pacman.y*y_scaling))

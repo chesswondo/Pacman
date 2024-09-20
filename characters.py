@@ -112,17 +112,24 @@ class Ghost(Character):
         ghost_image = pygame.transform.scale(ghost_image, self._field_size)
         return ghost_image
     
-    def make_move(self) -> None:
+    def make_move(self, pacman_x, pacman_y) -> None:
         possible_ghost_ways = []
 
         if is_up_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            possible_ghost_ways.append('up')
+            for i in range(1+2*int(pacman_y < self.y)):
+                possible_ghost_ways.append('up')
+
         if is_down_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            possible_ghost_ways.append('down')
+            for i in range(1+2*int(pacman_y > self.y)):
+                possible_ghost_ways.append('down')
+
         if is_left_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            possible_ghost_ways.append('left')
+            for i in range(1+2*int(pacman_x < self.x)):
+                possible_ghost_ways.append('left')
+
         if is_right_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            possible_ghost_ways.append('right')
+            for i in range(1+2*int(pacman_x > self.x)):
+                possible_ghost_ways.append('right')
 
         direction = random.choice(possible_ghost_ways)
         if direction == 'up':
