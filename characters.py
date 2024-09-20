@@ -92,6 +92,27 @@ class Dot(Character):
         return dot_image
     
 
+class Fire(Character):
+    '''Class for fireballs.'''
+    def __init__(self,
+                 grid: np.ndarray,
+                 field_size: Tuple[int, int],
+                 map_width: int,
+                 map_height: int,
+                 image_path: str) -> None:
+        
+        super().__init__(grid,
+                        field_size,
+                        map_width,
+                        map_height,
+                        image_path)
+        
+    def _load_image(self):
+        fire_image = pygame.image.load(self._image_path)
+        fire_image = pygame.transform.scale(fire_image, tuple(size for size in self._field_size))
+        return fire_image
+    
+
 class Ghost(Character):
     '''Class for ghosts.'''
     def __init__(self,
@@ -112,23 +133,23 @@ class Ghost(Character):
         ghost_image = pygame.transform.scale(ghost_image, self._field_size)
         return ghost_image
     
-    def make_move(self, pacman_x, pacman_y) -> None:
+    def make_move(self, pacman_x: int, pacman_y: int, mode: str) -> None:
         possible_ghost_ways = []
 
         if is_up_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_y < self.y)):
+            for i in range(1+2*int(pacman_y < self.y)*(mode=='hunt')):
                 possible_ghost_ways.append('up')
 
         if is_down_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_y > self.y)):
+            for i in range(1+2*int(pacman_y > self.y)*(mode=='hunt')):
                 possible_ghost_ways.append('down')
 
         if is_left_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_x < self.x)):
+            for i in range(1+2*int(pacman_x < self.x)*(mode=='hunt')):
                 possible_ghost_ways.append('left')
 
         if is_right_possible(self.x, self.y, self._map_width, self._map_height, self._grid):
-            for i in range(1+2*int(pacman_x > self.x)):
+            for i in range(1+2*int(pacman_x > self.x)*(mode=='hunt')):
                 possible_ghost_ways.append('right')
 
         direction = random.choice(possible_ghost_ways)

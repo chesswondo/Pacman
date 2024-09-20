@@ -2,7 +2,7 @@ import pygame
 import time
 import random
 from maze_generator import Maze
-from characters import Pacman, Dot, Ghost
+from characters import Pacman, Dot, Ghost, Fire
 from utils import *
 
 def run_pacman_game(screen_width: int,
@@ -31,6 +31,9 @@ def run_pacman_game(screen_width: int,
     pacman_image = pacman.image
     dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
     dot_image = dot.image
+    fireball = Fire(grid, field_size, map_width, map_height, "images/fireball.png")
+    fireball.x, fireball.y = -1, -1
+    fireball_image = fireball.image
 
     ghost_images = ["images/ghost_red.png", "images/ghost_blue.png", "images/ghost_green.png", "images/ghost_yellow.png"]
     ghost_image = random.choice(ghost_images)
@@ -52,9 +55,17 @@ def run_pacman_game(screen_width: int,
     score = 0
     
     ghosts = [ghost]
+    fireball_counter = 5
 
     # Main game loop
     while running:
+
+        # Ghost behaviour mode
+        ghost_mode = 'hunt'
+        fireball_counter += 1
+        if fireball_counter < 50:
+            ghost_mode = 'calm'
+
         keys = pygame.key.get_pressed()
         # Check for pacman input
         for event in pygame.event.get():
@@ -72,14 +83,21 @@ def run_pacman_game(screen_width: int,
             pacman.make_move(command='down')
         
         # Update game state
-        if abs(pacman.x - dot.x) < 0.5 and abs(pacman.y - dot.y) < 0.5:
+        if pacman.x == dot.x and pacman.y == dot.y:
             score += 1
             dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
+            if random.randrange(5) == 0:
+                fireball = Fire(grid, field_size, map_width, map_height, "images/fireball.png")
             while(True):
                 new_ghost = Ghost(grid, field_size, map_width, map_height, random.choice(ghost_images))
                 if min(abs(new_ghost.x-pacman.x), abs(new_ghost.y-pacman.y)) > 5:
                     ghosts.append(new_ghost)
                     break
+
+        # Fireball catching
+        if pacman.x == fireball.x and pacman.y == fireball.y:
+            fireball_counter = 0
+            fireball.x, fireball.y = -1, -1
         
         # Ghost behaviour
         screen.fill((0, 0, 0))
@@ -89,11 +107,12 @@ def run_pacman_game(screen_width: int,
             if abs(pacman.x - ghost.x) < 0.5 and abs(pacman.y - ghost.y) < 0.5:
                 pygame.quit()
 
-            ghosts[ghost_id].make_move(pacman.x, pacman.y)
+            ghosts[ghost_id].make_move(pacman.x, pacman.y, ghost_mode)
 
         # Draw game
         screen.blit(pacman_image, (pacman.x*x_scaling, pacman.y*y_scaling))
         screen.blit(dot_image, (dot.x*x_scaling, dot.y*y_scaling))
+        screen.blit(fireball_image, (fireball.x*x_scaling, fireball.y*y_scaling))
         for field_x in range(grid.shape[0]):
             for field_y in range(grid.shape[1]):
                 if grid[field_x][field_y] == 1:
@@ -110,9 +129,9 @@ def run_pacman_game(screen_width: int,
 
 
 def main():
-    run_pacman_game(screen_width=800,
+    run_pacman_game(screen_width=1200,
                     screen_height=600,
-                    map_width=40,
+                    map_width=60,
                     map_height=30,
                     move_delay=0.15,
                 )
