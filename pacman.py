@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import numpy as np
 from maze_generator import Maze
 from characters import Pacman, Dot, Ghost, Bonus
 from utils import *
@@ -23,8 +24,15 @@ def run_pacman_game(screen_width: int,
 
     # Maze generation
     wall_density = 0.3  # 30% of the maze will be walls
-    maze = Maze(map_width, map_height, wall_density)
-    grid = maze.generate_maze()
+    grid = None
+    while(True):
+        try:
+            maze = Maze(map_width, map_height, wall_density)
+            grid = maze.generate_maze()
+        except Exception:
+            continue
+        if np.sum(grid) > grid.size//10:
+            break
 
     # Characters initialization
     pacman = Pacman(grid, field_size, map_width, map_height, "images/pacman.png")
