@@ -28,15 +28,15 @@ def run_pacman_game(screen_width: int,
 
     # Characters initialization
     pacman = Pacman(grid, field_size, map_width, map_height, "images/pacman.png")
-    pacman_image = pacman.load_image()
+    pacman_image = pacman.image
     dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
-    dot_image = dot.load_image()
+    dot_image = dot.image
 
     ghost_images = ["images/ghost_red.png", "images/ghost_blue.png", "images/ghost_green.png", "images/ghost_yellow.png"]
     ghost_image = random.choice(ghost_images)
 
     ghost = Ghost(grid, field_size, map_width, map_height, ghost_image)
-    ghost_image = ghost.load_image()
+    ghost_image = ghost.image
 
     # Set the title and icon
     pygame.display.set_caption("Pac-Man")
@@ -85,7 +85,7 @@ def run_pacman_game(screen_width: int,
         screen.fill((0, 0, 0))
         for ghost_id, ghost in enumerate(ghosts):
 
-            screen.blit(ghost_image, (ghost.x*x_scaling, ghost.y*y_scaling))
+            screen.blit(ghost.image, (ghost.x*x_scaling, ghost.y*y_scaling))
             if abs(pacman.x - ghost.x) < 0.5 and abs(pacman.y - ghost.y) < 0.5:
                 pygame.quit()
 

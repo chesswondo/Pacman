@@ -19,11 +19,13 @@ class Character(ABC):
         self._map_width = map_width
         self._map_height = map_height
         self._image_path = image_path
+
+        self.image = self._load_image()
         self.x, self.y = self._initialize_field()
 
 
     @abstractmethod
-    def load_image(self):
+    def _load_image(self):
         '''Loads and scales image.'''
 
     def _initialize_field(self) -> Tuple[int, int]:
@@ -49,7 +51,7 @@ class Pacman(Character):
                         map_height,
                         image_path)
         
-    def load_image(self):
+    def _load_image(self):
         player_image = pygame.image.load(self._image_path)
         player_image = pygame.transform.scale(player_image, self._field_size)
         return player_image
@@ -84,7 +86,7 @@ class Dot(Character):
                         map_height,
                         image_path)
         
-    def load_image(self):
+    def _load_image(self):
         dot_image = pygame.image.load(self._image_path)
         dot_image = pygame.transform.scale(dot_image, tuple(size//2 for size in self._field_size))
         return dot_image
@@ -105,7 +107,7 @@ class Ghost(Character):
                         map_height,
                         image_path)
         
-    def load_image(self):
+    def _load_image(self):
         ghost_image = pygame.image.load(self._image_path)
         ghost_image = pygame.transform.scale(ghost_image, self._field_size)
         return ghost_image
