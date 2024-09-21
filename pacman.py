@@ -81,6 +81,10 @@ def run_pacman_game(screen_width: int,
         # Ghost behaviour mode
         ghost_mode = 'hunt'
 
+        # To immediate change
+        if fireball_counter == 0: heart_counter += heart_time
+        if heart_counter == 0: fireball_counter += fireball_time
+
         fireball_counter += 1
         if fireball_counter < fireball_time:
             ghost_mode = 'calm'
