@@ -6,6 +6,20 @@ from maze_generator import Maze
 from characters import Pacman, Dot, Ghost, Bonus
 from utils import *
 
+def generate_maze(map_width: int,
+                  map_height: int,
+                  wall_density: float,
+                  min_wall_density: float,
+                  fragmentation: float) -> np.ndarray:
+    while(True):
+        try:
+            maze = Maze(map_width, map_height, wall_density, fragmentation)
+            grid = maze.generate_maze()
+        except Exception:
+            continue
+        if np.sum(grid) > grid.size*min_wall_density:
+            return grid
+
 def run_pacman_game(screen_width: int,
                     screen_height: int,
                     map_width: int,
@@ -15,6 +29,7 @@ def run_pacman_game(screen_width: int,
                     images: dict,
                     fireball_time: int,
                     heart_time: int,
+                    max_score: int,
                 ):
     
     # Initialize Pygame
@@ -26,19 +41,16 @@ def run_pacman_game(screen_width: int,
     x_scaling = screen_width//map_width
     y_scaling = screen_height//map_height
 
+    # Set the title and icon
+    pygame.display.set_caption("Pac-Man")
+    image_folder = images["folder"]
+    icon = pygame.image.load(image_folder+images["pacman_icon"])
+    pygame.display.set_icon(icon)
+
     # Maze generation
-    grid = None
-    while(True):
-        try:
-            maze = Maze(map_width, map_height, wall_density)
-            grid = maze.generate_maze()
-        except Exception:
-            continue
-        if np.sum(grid) > grid.size//10:
-            break
+    grid = generate_maze(map_width, map_height, wall_density, 0.1, 0.1)
 
     # Characters initialization
-    image_folder = images["folder"]
     pacman = Pacman(grid, field_size, map_width, map_height, image_folder+images["pacman"])
     pacman_image = pacman.image
     dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
@@ -56,11 +68,6 @@ def run_pacman_game(screen_width: int,
     ghost = Ghost(grid, field_size, map_width, map_height, ghost_image)
     ghost_image = ghost.image
 
-    # Set the title and icon
-    pygame.display.set_caption("Pac-Man")
-    icon = pygame.image.load(image_folder+images["pacman_icon"])
-    pygame.display.set_icon(icon)
-
     # Load the wall images
     wall_image = pygame.image.load(image_folder+images["wall"])
     wall_image = pygame.transform.scale(wall_image, field_size)
@@ -70,6 +77,7 @@ def run_pacman_game(screen_width: int,
     # Set up the game variables
     running = True
     score = 0
+    level = 1
     
     ghosts = [ghost]
     fireball_counter = fireball_time
@@ -112,6 +120,21 @@ def run_pacman_game(screen_width: int,
         # Update game state
         if pacman.x == dot.x and pacman.y == dot.y:
             score += 1
+
+            if score == max_score:
+                grid = generate_maze(map_width, map_height, wall_density, 0.1, level/10)
+                pacman = Pacman(grid, field_size, map_width, map_height, image_folder+images["pacman"])
+                dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
+                fireball.x, fireball.y = -1, -1
+                heart.x, heart.y = -1, -1
+                ghosts = [Ghost(grid, field_size, map_width, map_height, random.choice(ghost_images))]
+                fireball_counter = fireball_time
+                heart_counter = heart_time
+                score = 0
+                level += 1
+                if level == 11: pygame.quit()
+                continue
+
             dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
 
             if random.randrange(10) == 0:
@@ -164,10 +187,12 @@ def run_pacman_game(screen_width: int,
                     screen.blit(wall_image, (field_x*x_scaling, field_y*y_scaling))
 
         font = pygame.font.Font("freesansbold.ttf", 16)
-        text_score = font.render("Score: " + str(score), True, (255, 255, 255))
+        text_level = font.render("Level: " + str(level) + " / 10", True, (255, 255, 255))
+        text_score = font.render("Score: " + str(score) + " / 10", True, (255, 255, 255))
         text_mode = font.render("Mode: " + ghost_mode, True, (255, 255, 255))
-        screen.blit(text_score, (10, 10))
-        screen.blit(text_mode,  (10, 26))
+        screen.blit(text_level, (10, 10))
+        screen.blit(text_score, (10, 26))
+        screen.blit(text_mode,  (10, 42))
         pygame.display.flip()
         time.sleep(move_delay)
 
@@ -187,6 +212,7 @@ def main():
                     images=config["images"],
                     fireball_time=config["fireball_time"],
                     heart_time=config["heart_time"],
+                    max_score = config["max_score"],
                 )
     
 

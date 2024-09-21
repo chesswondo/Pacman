@@ -23,5 +23,6 @@
     "move_delay": 0.15,
     "wall_density": 0.2,
     "fireball_time": 100,
-    "heart_time": 100
+    "heart_time": 100,
+    "max_score": 10
 }
