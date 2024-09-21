@@ -1,3 +1,5 @@
+import json
+
 def is_up_possible(object_x, object_y, width, height, grid):
     if object_y == 0:
         return False
@@ -25,3 +27,7 @@ def is_right_possible(object_x, object_y, width, height, grid):
     if grid[object_x+1][object_y] == 1:
         return False
     return True
+
+def load_config(config_path: str) -> dict:
+    with open(config_path, "r") as f:
+        return json.load(f)

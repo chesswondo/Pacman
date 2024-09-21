@@ -11,6 +11,10 @@ def run_pacman_game(screen_width: int,
                     map_width: int,
                     map_height: int,
                     move_delay: int,
+                    wall_density: float,
+                    images: dict,
+                    fireball_time: int,
+                    heart_time: int,
                 ):
     
     # Initialize Pygame
@@ -23,7 +27,6 @@ def run_pacman_game(screen_width: int,
     y_scaling = screen_height//map_height
 
     # Maze generation
-    wall_density = 0.3  # 30% of the maze will be walls
     grid = None
     while(True):
         try:
@@ -35,18 +38,19 @@ def run_pacman_game(screen_width: int,
             break
 
     # Characters initialization
-    pacman = Pacman(grid, field_size, map_width, map_height, "images/pacman.png")
+    image_folder = images["folder"]
+    pacman = Pacman(grid, field_size, map_width, map_height, image_folder+images["pacman"])
     pacman_image = pacman.image
-    dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
+    dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
     dot_image = dot.image
-    fireball = Bonus(grid, field_size, map_width, map_height, "images/fireball.png")
+    fireball = Bonus(grid, field_size, map_width, map_height, image_folder+images["fireball"])
     fireball.x, fireball.y = -1, -1
     fireball_image = fireball.image
-    heart = Bonus(grid, field_size, map_width, map_height, "images/heart.png")
+    heart = Bonus(grid, field_size, map_width, map_height, image_folder+images["heart"])
     heart.x, heart.y = -1, -1
     heart_image = heart.image
 
-    ghost_images = ["images/ghost_red.png", "images/ghost_blue.png", "images/ghost_green.png", "images/ghost_yellow.png"]
+    ghost_images = [image_folder+ghost_img for ghost_img in images["ghosts"]]
     ghost_image = random.choice(ghost_images)
 
     ghost = Ghost(grid, field_size, map_width, map_height, ghost_image)
@@ -54,11 +58,11 @@ def run_pacman_game(screen_width: int,
 
     # Set the title and icon
     pygame.display.set_caption("Pac-Man")
-    icon = pygame.image.load("images/pacman_icon.png")
+    icon = pygame.image.load(image_folder+images["pacman_icon"])
     pygame.display.set_icon(icon)
 
     # Load the wall images
-    wall_image = pygame.image.load("images/wall.jpg")
+    wall_image = pygame.image.load(image_folder+images["wall"])
     wall_image = pygame.transform.scale(wall_image, field_size)
 
     # Set up the game variables
@@ -66,8 +70,8 @@ def run_pacman_game(screen_width: int,
     score = 0
     
     ghosts = [ghost]
-    fireball_counter = 50
-    heart_counter = 50
+    fireball_counter = fireball_time
+    heart_counter = heart_time
 
     # Main game loop
     while running:
@@ -76,11 +80,11 @@ def run_pacman_game(screen_width: int,
         ghost_mode = 'hunt'
 
         fireball_counter += 1
-        if fireball_counter < 50:
+        if fireball_counter < fireball_time:
             ghost_mode = 'calm'
         
         heart_counter += 1
-        if heart_counter < 50:
+        if heart_counter < heart_time:
             ghost_mode = 'fear'
 
         keys = pygame.key.get_pressed()
@@ -102,12 +106,12 @@ def run_pacman_game(screen_width: int,
         # Update game state
         if pacman.x == dot.x and pacman.y == dot.y:
             score += 1
-            dot = Dot(grid, field_size, map_width, map_height, "images/dot.png")
+            dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
 
             if random.randrange(5) == 0:
-                fireball = Bonus(grid, field_size, map_width, map_height, "images/fireball.png")
+                fireball = Bonus(grid, field_size, map_width, map_height, image_folder+images["fireball"])
             if random.randrange(10) == 0:
-                heart = Bonus(grid, field_size, map_width, map_height, "images/heart.png")
+                heart = Bonus(grid, field_size, map_width, map_height, image_folder+images["heart"])
 
             while(True):
                 new_ghost = Ghost(grid, field_size, map_width, map_height, random.choice(ghost_images))
@@ -156,11 +160,17 @@ def run_pacman_game(screen_width: int,
 
 
 def main():
-    run_pacman_game(screen_width=1200,
-                    screen_height=600,
-                    map_width=60,
-                    map_height=30,
-                    move_delay=0.15,
+    config = load_config("config.json")
+
+    run_pacman_game(screen_width=config["screen_width"],
+                    screen_height=config["screen_height"],
+                    map_width=config["map_width"],
+                    map_height=config["map_height"],
+                    move_delay=config["move_delay"],
+                    wall_density=config["wall_density"],
+                    images=config["images"],
+                    fireball_time=config["fireball_time"],
+                    heart_time=config["heart_time"],
                 )
     
 

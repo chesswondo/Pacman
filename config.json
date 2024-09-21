@@ -1,0 +1,26 @@
+{
+    "images": {
+        "folder": "images/",
+        "pacman_icon": "pacman_icon.png",
+        "pacman": "pacman.png",
+        "dot": "dot.png",
+        "fireball": "fireball.png",
+        "heart": "heart.png",
+        "wall": "wall.jpg",
+        "ghosts": [
+            "ghost_blue.png",
+            "ghost_red.png",
+            "ghost_green.png",
+            "ghost_yellow.png"
+        ]
+    },
+
+    "screen_width": 1200,
+    "screen_height": 600,
+    "map_width": 60,
+    "map_height": 30,
+    "move_delay": 0.15,
+    "wall_density": 0.3,
+    "fireball_time": 100,
+    "heart_time": 100
+}
