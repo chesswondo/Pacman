@@ -149,9 +149,11 @@ def run_pacman_game(screen_width: int,
                 if grid[field_x][field_y] == 1:
                     screen.blit(wall_image, (field_x*x_scaling, field_y*y_scaling))
 
-        font = pygame.font.Font("freesansbold.ttf", 32)
-        text = font.render("Score: " + str(score), True, (255, 255, 255))
-        screen.blit(text, (10, 10))
+        font = pygame.font.Font("freesansbold.ttf", 16)
+        text_score = font.render("Score: " + str(score), True, (255, 255, 255))
+        text_mode = font.render("Mode: " + ghost_mode, True, (255, 255, 255))
+        screen.blit(text_score, (10, 10))
+        screen.blit(text_mode,  (10, 26))
         pygame.display.flip()
         time.sleep(move_delay)
 

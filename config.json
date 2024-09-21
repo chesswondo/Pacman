@@ -20,7 +20,7 @@
     "map_width": 60,
     "map_height": 30,
     "move_delay": 0.15,
-    "wall_density": 0.3,
+    "wall_density": 0.2,
     "fireball_time": 100,
     "heart_time": 100
 }
