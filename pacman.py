@@ -64,6 +64,8 @@ def run_pacman_game(screen_width: int,
     # Load the wall images
     wall_image = pygame.image.load(image_folder+images["wall"])
     wall_image = pygame.transform.scale(wall_image, field_size)
+    ghost_reverse_image = pygame.image.load(image_folder+images["ghost_reverse"])
+    ghost_reverse_image = pygame.transform.scale(ghost_reverse_image, field_size)
 
     # Set up the game variables
     running = True
@@ -108,9 +110,9 @@ def run_pacman_game(screen_width: int,
             score += 1
             dot = Dot(grid, field_size, map_width, map_height, image_folder+images["dot"])
 
-            if random.randrange(5) == 0:
-                fireball = Bonus(grid, field_size, map_width, map_height, image_folder+images["fireball"])
             if random.randrange(10) == 0:
+                fireball = Bonus(grid, field_size, map_width, map_height, image_folder+images["fireball"])
+            if random.randrange(5) == 0:
                 heart = Bonus(grid, field_size, map_width, map_height, image_folder+images["heart"])
 
             while(True):
@@ -132,11 +134,19 @@ def run_pacman_game(screen_width: int,
         # Ghost behaviour
         screen.fill((0, 0, 0))
         for ghost_id, ghost in enumerate(ghosts):
+            
+            ghost_image = ghost.image
+            if ghost_mode == 'calm':
+                ghost_image = ghost_reverse_image
 
-            screen.blit(ghost.image, (ghost.x*x_scaling, ghost.y*y_scaling))
-            if abs(pacman.x - ghost.x) < 0.5 and abs(pacman.y - ghost.y) < 0.5:
-                pygame.quit()
+            if pacman.x == ghost.x and pacman.y == ghost.y:
+                if ghost_mode != 'calm':
+                    pygame.quit()
+                else:
+                    del ghosts[ghost_id]
+                    continue
 
+            screen.blit(ghost_image, (ghost.x*x_scaling, ghost.y*y_scaling))
             ghosts[ghost_id].make_move(pacman.x, pacman.y, ghost_mode)
 
         # Draw game
