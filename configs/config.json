@@ -1,6 +1,6 @@
 {
     "images": {
-        "folder": "images/",
+        "folder": "../images/",
         "pacman_icon": "pacman_icon.png",
         "pacman": "pacman.png",
         "dot": "dot.png",

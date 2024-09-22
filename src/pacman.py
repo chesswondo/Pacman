@@ -201,7 +201,7 @@ def run_pacman_game(screen_width: int,
 
 
 def main():
-    config = load_config("config.json")
+    config = load_config("../configs/config.json")
 
     run_pacman_game(screen_width=config["screen_width"],
                     screen_height=config["screen_height"],
