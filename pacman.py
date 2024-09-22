@@ -47,8 +47,13 @@ def run_pacman_game(screen_width: int,
     icon = pygame.image.load(image_folder+images["pacman_icon"])
     pygame.display.set_icon(icon)
 
+    # Set up the game variables
+    running = True
+    score = 0
+    level = 1
+
     # Maze generation
-    grid = generate_maze(map_width, map_height, wall_density, 0.1, 0.1)
+    grid = generate_maze(map_width, map_height, wall_density, 0.1, level/10)
 
     # Characters initialization
     pacman = Pacman(grid, field_size, map_width, map_height, image_folder+images["pacman"])
@@ -73,11 +78,6 @@ def run_pacman_game(screen_width: int,
     wall_image = pygame.transform.scale(wall_image, field_size)
     ghost_reverse_image = pygame.image.load(image_folder+images["ghost_reverse"])
     ghost_reverse_image = pygame.transform.scale(ghost_reverse_image, field_size)
-
-    # Set up the game variables
-    running = True
-    score = 0
-    level = 1
     
     ghosts = [ghost]
     fireball_counter = fireball_time

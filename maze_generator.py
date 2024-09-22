@@ -56,31 +56,36 @@ class Maze:
         total_cells = self.rows * self.cols
         target_open_cells = int(total_cells * (1 - self.wall_density))
         open_count = 1  # The start point is already open
-        open_list = [(random.randrange(self.rows), random.randrange(self.cols))]
+        open_list = [[(random.randrange(0, self.rows//2), random.randrange(0, self.cols//2))],
+                     [(random.randrange(self.rows//2, self.rows), random.randrange(0, self.cols//2))],
+                     [(random.randrange(self.rows//2, self.rows), random.randrange(self.cols//2, self.cols))],
+                     [(random.randrange(0, self.rows//2), random.randrange(self.cols//2, self.cols))]
+                ]
         
         while open_count < target_open_cells:
-            if not open_list:
-                # If the list of open cells is empty, add a new random cell to keep progressing
-                open_list.append((random.randint(0, self.rows - 1), random.randint(0, self.cols - 1)))
+            for corner_list in open_list:
+                if not corner_list:
+                    # If the list of open cells is empty, add a new random cell to keep progressing
+                    corner_list.append((random.randint(0, self.rows - 1), random.randint(0, self.cols - 1)))
+                    
+                r, c = corner_list.pop()
                 
-            r, c = open_list.pop()
-            
-            if self.grid[r][c] == 0:
-                continue
-            
-            # Make this cell an open space
-            self.grid[r][c] = 0
-            open_count += 1
-            
-            # Get neighbors and try to open more paths
-            neighbors = self.get_neighbors(r, c)
-            random.shuffle(neighbors)
-            
-            for nr, nc in neighbors:
-                if self.grid[nr][nc] == 1:
-                    # Open path with a certain probability
-                    if random.random() > self.fragmentation:
-                        open_list.append((nr, nc))
+                if self.grid[r][c] == 0:
+                    continue
+                
+                # Make this cell an open space
+                self.grid[r][c] = 0
+                open_count += 1
+                
+                # Get neighbors and try to open more paths
+                neighbors = self.get_neighbors(r, c)
+                random.shuffle(neighbors)
+                
+                for nr, nc in neighbors:
+                    if self.grid[nr][nc] == 1:
+                        # Open path with a certain probability
+                        if random.random() > self.fragmentation:
+                            corner_list.append((nr, nc))
         
         # Ensure the maze is fully connected
         while not self.is_fully_connected():
