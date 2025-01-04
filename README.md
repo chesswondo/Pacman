@@ -32,3 +32,6 @@ To use the program, first navigate to project's directory. Then you can use the 
 ```bash
 python pacman.py
 ```
+
+## Demo
+![screenshot](assets/readme_images/pacman_demo.png)
